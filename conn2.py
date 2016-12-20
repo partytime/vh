@@ -150,7 +150,34 @@ def print_outputs():
     for key in outputs_ordered:
         print "%3d:%-32.32s" % ( int(key), output_labels[key])
 
+def add_route(route_in, route_out):
+    route_in = str(route_in)
+    route_out = str(route_out)
+    #TODO: check that in and out exist
+    #if route_in not in input_labels:
+    #    print "There is no input:%s" % route_in
+    #    return False
+    #if route_out not in output_labels:
+    #    print "There is no output:%s" % route_out
+    #    return False
+    print "routing %s to %s" %(route_in, route_out)
+    print "in is", route_in
+    print "out is", route_out
+    print type(route_in)
+    for key in input_labels:
+        if input_labels[key] == route_in:
+            route_in = key
+            print "in key is", route_in
+            break
+    for key in output_labels:
+        if output_labels[key] == route_out:
+            route_out = key
+            print "out key is", route_out
+            break
+    cmd = "VIDEO OUTPUT ROUTING:\n%s %s \n\n" % (str(route_out), str(route_in))
+    sock.sendall(cmd)
 print_routing()
 #print_outputs()
 
+add_route("Direct TV", "Tech Ops QC 1.1")
 
