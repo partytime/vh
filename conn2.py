@@ -133,31 +133,65 @@ class VHClient():
                         self.video_output_routing[ input_line[0]] = input_line[1]
                 #print "video output routing =\n", video_output_routing
 
-    def print_routing(self):
+    def get_routing(self):
+        """ Prints the routing table
+        ie, input_label > output_label
+        returns: list of tuples
+        """
         print "Routing:"
+        array = []
         key = lambda x: int(x[0])
         routing_ordered = collections.OrderedDict(sorted(self.video_output_routing.items(), key=key))
         for key in routing_ordered:
             try:
                 item = self.video_output_routing[key]
-                print "%3d:%-32.32s>%32.32s:%3d" % ( int(item), self.input_labels[item], self.output_labels[key], int(key) )
+                array.append( ( int(item), self.input_labels[item], self.output_labels[key], int(key) ))
+                #print "%3d:%-32.32s>%32.32s:%3d" % ( int(item), self.input_labels[item], self.output_labels[key], int(key) )
             except KeyError, e:
                 print 'got a key error %s' %str(e)
                 pass
+        return array
 
-    def print_inputs(self):
+    def pp_routing(self):
+        """ Pretty prints the routing table """
+        for tup in self.get_routing():
+            print "%3d:%-32.32s>%32.32s:%3d" % ( tup[0], tup[1], tup[2], tup[3] )
+
+    def get_inputs(self):
+        """ Gets the inputs
+        returns: list of tuples
+        """
         print "Inputs:"
+        array = []
         key = lambda x: int(x[0])
         inputs_ordered = collections.OrderedDict(sorted(self.input_labels.items(), key=key))
         for key in inputs_ordered:
-            print "%3d:%-32.32s" % ( int(key), self.input_labels[key])
+            array.append( (int(key), self.input_labels[key]))
+            #print "%3d:%-32.32s" % ( int(key), self.input_labels[key])
+        return array
 
-    def print_outputs(self):
+    def pp_inputs(self):
+        """ Pretty prints the inputs """
+        for tup in self.get_inputs():
+            print "%3d:%-32.32s" % (tup[0], tup[1])
+
+    def get_outputs(self):
+        """ Gets the outputs
+        returns: list of tuples
+        """
         print "Outputs:"
+        array = []
         key = lambda x: int(x[0])
         outputs_ordered = collections.OrderedDict(sorted(self.output_labels.items(), key=key))
         for key in outputs_ordered:
-            print "%3d:%-32.32s" % ( int(key), self.output_labels[key])
+            array.append(  ( int(key), self.output_labels[key]))
+            #print "%3d:%-32.32s" % ( int(key), self.output_labels[key])
+        return array
+
+    def pp_outputs(self):
+        """ Pretty prints the inputs """
+        for tup in self.get_outputs():
+            print "%3d:%-32.32s" % (tup[0], tup[1])
 
     def add_route(self, route_in, route_out):
         route_in = str(route_in)
@@ -189,6 +223,6 @@ class VHClient():
 
 #add_route("Direct TV", "Tech Ops QC 1.1")
 
-z = VHClient(host="videohub")
-z.read_info()
-print z.print_routing()
+#z = VHClient(host="videohub")
+#z.read_info()
+#print z.pp_routing()
