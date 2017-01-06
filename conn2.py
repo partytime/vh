@@ -34,20 +34,17 @@ class VHClient():
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print host, port
         self.sock.connect((host, port))
-        time.sleep(5)
-        #print self.data
+        # since we aren't polling the socket, just dumping data
+        # we need to sleep to make sure everything has been received
+        # TODO: maybe change this to WHILE data:?
+        time.sleep(1)
 
     def read_info(self):
         self.data = self.sock.recv(READ_BUFF_SIZE)
         message = ""
-        #data = sock.recv(READ_BUFF_SIZE)
         message += self.data
-        #if (len(str) < READ_BUFF_SIZE):
-        #   break
-        #print message
         line_array = message.split('\n')
 
-        #print line_array
         while(len(line_array) > 0):
             first_line = line_array.pop(0)
             #print first_line
@@ -221,8 +218,49 @@ class VHClient():
         self.sendall(cmd)
 
 
-#add_route("Direct TV", "Tech Ops QC 1.1")
+parser = argparse.ArgumentParser()
 
+parser.add_argument("-inputs", help="Show list of inputs", action="store_true")
+parser.add_argument("-outputs", help="Show list of outputs", action="store_true")
+parser.add_argument("-change", nargs=2, help="Change send an input to an output")
+parser.add_argument("-a", help="Print current routing table", action="store_true")
+
+
+if len(sys.argv) == 1:
+    print "Supply an argument"
+    parser.print_help()
+    sys.exit(1)
+
+args = parser.parse_args()
+
+if args.inputs:
+    vh = VHClient(host="videohub")
+    vh.read_info()
+    print vh.pp_inputs()
+
+if args.outputs:
+    vh = VHClient(host="videohub")
+    vh.read_info()
+    print vh.pp_outputs()
+
+if args.a:
+    vh = VHClient(host="videohub")
+    vh.read_info()
+    print vh.pp_routing()
+
+if args.change:
+    if len(args.change) != 2:
+        print "you must specify an input and an output!"
+        sys.exit(1)
+    else:
+        vh = VHClient(host="videohub")
+        vh.read_info()
+        print "sending input %s to output %s" %(args.change[0], args.change[1])
+        #vh.add_route((args.change[0], args.change[1])
+
+
+#### TESTING
+#add_route("Direct TV", "Tech Ops QC 1.1")
 #z = VHClient(host="videohub")
 #z.read_info()
 #print z.pp_routing()
